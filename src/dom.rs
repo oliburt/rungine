@@ -24,7 +24,7 @@ impl Node {
         }
     }
 
-    pub fn p_tree(&self, indent: u8) -> String {
+    fn p_tree(&self, indent: u8) -> String {
         match &self.node_type {
             NodeType::Text(text) => with_indent(indent, text.clone()),
             NodeType::Element(el_data) => {
