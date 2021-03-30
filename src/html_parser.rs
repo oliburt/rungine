@@ -42,11 +42,45 @@ impl Parser {
         }
         result
     }
+
+    /// Consume and discard n chars of whitespace
+    pub fn consume_whitespace(&mut self) {
+        self.consume_while(char::is_whitespace);
+    }
+
+    pub fn parse_tag_name(&mut self) -> String {
+        self.consume_while(|c| match c {
+            'a'..='z' | 'A'..='Z' | '0'..='9' => true,
+            _ => false,
+        })
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_parse_tag_name() {
+        let mut p = Parser::new("<tag1A$ >".into());
+        assert_eq!(p.parse_tag_name(), "".to_string());
+
+        p.consume_char();
+        assert_eq!(p.parse_tag_name(), "tag1A".to_string());
+        assert_eq!(p.parse_tag_name(), "".to_string());
+    }
+
+    #[test]
+    fn test_consume_whitespace() {
+        let mut p = Parser::new("test".into());
+
+        p.consume_whitespace();
+        assert_eq!(p.current_char(), Some('t'));
+
+        let mut p = Parser::new("     test".into());
+        p.consume_whitespace();
+        assert_eq!(p.current_char(), Some('t'));
+    }
 
     #[test]
     fn test_consume_while() {
